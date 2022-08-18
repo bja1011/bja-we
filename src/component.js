@@ -1,7 +1,7 @@
 export function addComponent() {
-    const element = document.createElement('div');
+    const element = d.createElement('div');
     element.innerHTML = 'asdasd';
-    document.body.appendChild(element);
+    d.body.appendChild(element);
 }
 
 
