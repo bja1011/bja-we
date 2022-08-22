@@ -69,9 +69,11 @@ export class Renderer {
 
   pos = 0;
 
+  move(value) {
+    this.pos += value;
+  }
+
   draw() {
-    // return;
-    this.pos += 0.001;
     this.clearCanvas();
 
     const uPosition = GL.getUniformLocation(this.program, "uPosition");
