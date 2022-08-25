@@ -1,5 +1,6 @@
 export interface GameObjectData {
   name?: string;
+  shaderName?: string;
 }
 
 export enum ShaderType {

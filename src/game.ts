@@ -1,6 +1,7 @@
 import { Renderer } from "./renderer";
 import { GameObject } from "./game-object";
 import { Input } from "./input";
+import { GameObjectData } from './models';
 
 export class Game {
   renderer: Renderer;
@@ -19,14 +20,14 @@ export class Game {
     this.input.update();
     this.gameObjects.forEach((gameObject) => gameObject?.update());
 
-    this.renderer.draw();
+    this.renderer.draw(this.gameObjects);
 
     if (!this.stopUpdate) {
       requestAnimationFrame(this.update.bind(this));
     }
   }
 
-  addGameObject(name: string, gameObjectData) {
+  addGameObject(name: string, gameObjectData: GameObjectData) {
     const gameObject = new GameObject(this, {
       name,
       ...gameObjectData,

@@ -21,6 +21,17 @@ void main() {
 }
 `;
 
+export const vertexShaderString2b = `#version 300 es
+precision mediump float;
+
+in vec2 uPosition;
+uniform float uModelViewMatrix;
+
+void main() {
+  gl_Position = vec4(uModelViewMatrix*2.0,1,1,1) + vec4(uPosition, 0.0, 1.0);
+}
+`;
+
 export const fragmentShaderString = `#version 300 es
 precision mediump float;
 out vec4 fragColor;
