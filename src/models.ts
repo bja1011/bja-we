@@ -1,12 +1,23 @@
+import { Mesh } from "./mesh";
+import { Game } from './game';
+
 export interface GameObjectData {
   name?: string;
-  shaderName?: string;
   position: Vec3;
+  mesh?: Mesh;
+}
+
+export interface MeshData {
+  vertices: number[];
+  indices: number[];
+  colors?: number[];
+  shaderName: string,
+  game: Game;
 }
 
 export enum ShaderType {
   Vertex = "vertex",
-  Fragment = "fragment"
+  Fragment = "fragment",
 }
 
 export interface Vec2 {
@@ -19,5 +30,6 @@ export interface Vec3 extends Vec2 {
 }
 
 export enum MeshType {
-  TRIANGLE = 'triangle'
+  TRIANGLE = "triangle",
+  QUAD = "quad",
 }

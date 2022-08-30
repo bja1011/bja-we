@@ -1,7 +1,7 @@
 import { Renderer } from "./renderer";
 import { GameObject } from "./game-object";
 import { Input } from "./input";
-import { GameObjectData } from './models';
+import { GameObjectData } from "./models";
 
 export class Game {
   renderer: Renderer;
@@ -14,6 +14,14 @@ export class Game {
     this.renderer = new Renderer();
     this.input = new Input();
     this.update();
+  }
+
+  addShader(
+    name: string,
+    vertexShaderSource: string,
+    fragmentShaderSource: string
+  ) {
+    this.renderer.addShader(name, vertexShaderSource, fragmentShaderSource);
   }
 
   private update() {

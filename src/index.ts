@@ -1,50 +1,57 @@
-import { Game } from "./game";
-import { fragmentShaderString, vertexShaderString2, vertexShaderString2b, } from "./shaders";
-import { Mesh } from './mesh';
-import { MeshType } from './models';
-
-// @ts-ignore
 window.GL = undefined;
+
+import { Game } from "./game";
+import { basicFragmentShaderString, basicVertexShaderString } from "./shaders";
+import { Mesh, Quad, Triangle } from "./mesh";
 
 const game = new Game();
 
-// load shaders
-game.renderer.addShader("simple", vertexShaderString2, fragmentShaderString);
-game.renderer.addShader("simple2", vertexShaderString2b, fragmentShaderString);
+game.addShader("basicShader",
+  basicVertexShaderString,
+  basicFragmentShaderString)
 
 const go = game.addGameObject("go1", {
-  shaderName: "simple",
   position: {
     x: 0,
     y: 0,
-    z: 0
-  }
+    z: 0,
+  },
 });
 
-go.addMesh(new Mesh(
-  MeshType.TRIANGLE,
-
-))
+const mesh = new Mesh({
+  game,
+  // prettier-ignore
+  vertices: [
+    0,0,
+    0,1,
+    1,0
+  ],
+  indices: [0,1,2],
+  colors: [
+    1,1,0,1,
+    1,0,1,1,
+    1,1,1,1
+  ],
+  shaderName: 'basicShader'
+});
+go.addMesh(mesh);
 
 const go2 = game.addGameObject("go2", {
-  shaderName: "simple2",
   position: {
-    x: 0.8,
-    y:0.7,
-    z: 0
-  }
+    x: 0.5,
+    y: 0.5,
+    z: 0,
+  },
 });
+
+const mesh2 = new Quad(game, "basicShader");
+go2.addMesh(mesh2);
 
 game.setInput([
   {
     key: "ArrowRight",
     action: () => {
       go.move({
-        x: 0.1,
-        y: 0,
-        z: 0,
-      });
-      go2.move({
         x: 0.1,
         y: 0,
         z: 0,
@@ -57,18 +64,28 @@ game.setInput([
       go.move({
         x: -0.1,
         y: 0,
-        z: 0
+        z: 0,
       });
-      go2.move({
-        x: -0.1,
-        y: 0,
-        z: 0
+    },
+  },
+  {
+    key: "ArrowUp",
+    action: () => {
+      go.move({
+        x: 0,
+        y: 0.1,
+        z: 0,
+      });
+    },
+  },
+  {
+    key: "ArrowDown",
+    action: () => {
+      go.move({
+        x: 0,
+        y: -0.1,
+        z: 0,
       });
     },
   },
 ]);
-
-//
-// setTimeout(() => {
-//   game.removeObject(go2);
-// }, 1000);

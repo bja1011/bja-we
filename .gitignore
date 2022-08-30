@@ -1,3 +1,4 @@
 /dist/*
 node_modules
 /e.js
+/src/w.js
