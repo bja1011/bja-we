@@ -1,6 +1,9 @@
 import { Shader } from "./shader";
-import { MeshData, Vec3 } from "./models";
+import { MeshData, Vec2, Vec3 } from "./models";
 import { Game } from "./game";
+import { genVertexColors } from "./helpers";
+import { GameObject } from "./game-object";
+import { matrixHelpers } from "./helpers";
 
 export class Mesh {
   vertices: Float32Array;
@@ -12,7 +15,10 @@ export class Mesh {
   colorBuffer: WebGLBuffer;
   shader: Shader;
   private game: Game;
-  private position: Vec3;
+  position: Vec3 = { x: 0, y: 0, z: 0 };
+  private transforms: any;
+  private modelTransforms: any;
+  gameObject: GameObject;
 
   constructor(data: MeshData) {
     this.vertices = new Float32Array(data.vertices ?? []); // @todo: REMOVE DEFAULT VALUE
@@ -47,19 +53,24 @@ export class Mesh {
   bind() {
     GL.useProgram(this.shader.program);
 
-    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
     // aPosition attribute
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     GL.bindBuffer(GL.ARRAY_BUFFER, this.vertexBuffer);
-
     GL.vertexAttribPointer(0, 2, GL.FLOAT, false, 0, 0);
     GL.enableVertexAttribArray(0);
 
-    const uModelViewMatrix = GL.getUniformLocation(
+    const uModel = GL.getUniformLocation(this.shader.program, "uModel");
+    GL.uniformMatrix4fv(uModel, false, new Float32Array(this.modelTransforms));
+
+    const uProjection = GL.getUniformLocation(
       this.shader.program,
-      "uModelViewMatrix"
+      "uProjection"
     );
-    GL.uniform3f(uModelViewMatrix, this.position.x, this.position.y, 0);
+    GL.uniformMatrix4fv(
+      uProjection,
+      false,
+      new Float32Array(this.game.renderer.projection)
+    );
 
     // colors
     GL.bindBuffer(GL.ARRAY_BUFFER, this.colorBuffer);
@@ -67,8 +78,36 @@ export class Mesh {
     GL.enableVertexAttribArray(1);
   }
 
-  update(position: Vec3) {
-    this.position = position;
+  update(now) {
+    //Scale up
+    const { x: sx, y: sy, z: sz } = this.gameObject.scale;
+    const scale = matrixHelpers.scaleMatrix(sx, sy, sz);
+
+    // Rotate according to time
+    const rotateX = matrixHelpers.rotateXMatrix(now * -0.0005);
+    const rotateY = matrixHelpers.rotateYMatrix(now * 0.0005);
+    const rotateZ = matrixHelpers.rotateZMatrix(now * 0.0005);
+
+    const { x: tx, y: ty, z: tz } = this.gameObject.position;
+    const translate = matrixHelpers.translateMatrix(tx, ty, tz);
+
+    // Calculate origin matrix
+    const { x: ox, y: oy, z: oz } = this.gameObject.origin;
+    const originMatrix = matrixHelpers.translateMatrix(ox, oy, oz);
+
+    // Move slightly down
+    const position = matrixHelpers.translateMatrix(0, 0, 0); // @todo: handle this
+
+    // Multiply together, make sure and read them in opposite order
+    this.modelTransforms = matrixHelpers.multiplyArrayOfMatrices([
+      translate,
+      position, // step 4
+      rotateZ, // step 3
+      // rotateY, // step 3
+      // rotateX, // step 2
+      scale, // step 1
+      originMatrix,
+    ]);
   }
 
   draw(position: Vec3) {
@@ -76,10 +115,14 @@ export class Mesh {
     this.bind();
     GL.drawElements(GL.TRIANGLES, this.indices.length, GL.UNSIGNED_BYTE, 0);
   }
+
+  setOwner(gameObject: GameObject) {
+    this.gameObject = gameObject;
+  }
 }
 
 export class Triangle extends Mesh {
-  constructor(game: Game, shaderName) {
+  constructor(game: Game, shaderName: string, colors?: number[]) {
     super({
       game,
       shaderName,
@@ -90,26 +133,13 @@ export class Triangle extends Mesh {
         1, 0
       ],
       indices: [0, 1, 2],
-      colors: [
-        1.0,
-        1.0,
-        0.0,
-        1.0, // 1
-        0.0,
-        0.7,
-        0.0,
-        1.0, // 2
-        0.1,
-        1.0,
-        0.6,
-        1.0, // 3
-      ],
+      colors: colors ?? genVertexColors(4),
     });
   }
 }
 
 export class Quad extends Mesh {
-  constructor(game: Game, shaderName: string) {
+  constructor(game: Game, shaderName: string, colors?: number[]) {
     super({
       game,
       shaderName,
@@ -122,13 +152,7 @@ export class Quad extends Mesh {
       ],
       indices: [0, 1, 3, 3, 2, 1],
       // prettier-ignore
-      colors: [
-        1, 1, 1, 1,
-        1, 1, 1, 1,
-        1, 1, 1, 1,
-        1, 1, 1, 1,
-        1, 1, 1, 1,
-      ],
+      colors: colors ?? genVertexColors(4),
     });
   }
 }

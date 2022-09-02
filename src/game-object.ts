@@ -1,52 +1,70 @@
-import { GameObjectData, Vec3 } from "./models";
+import { GameObjectData, Vec2, Vec3 } from "./models";
 import { Game } from "./game";
-import { Shader } from "./shader";
-import { Mesh } from './mesh';
+import { Mesh } from "./mesh";
 
 export class GameObject {
   mesh: Mesh;
   // meshes: Mesh[]; @todo: future
   name: string;
   private game: Game;
-  private position: Vec3 = {
+  afterUpdateFn: Function;
+  position: Vec3 = {
     x: 0,
     y: 0,
-    z: 0
+    z: 0,
   };
+  origin: Vec3 = { x: -0.5, y: -0.5, z: 0.5 };
+  scale: Vec3 = { x: 1, y: 1, z: 1 };
 
   constructor(game: Game, gameObjectData: GameObjectData) {
     this.name = gameObjectData.name;
     this.game = game;
     this.position = gameObjectData.position ?? this.position;
-    this.mesh = gameObjectData?.mesh;
+    if (gameObjectData.mesh) {
+      this.addMesh(gameObjectData.mesh);
+    }
+    if (gameObjectData.afterUpdateFn) {
+      this.afterUpdateFn = gameObjectData.afterUpdateFn.bind(this);
+    }
   }
 
   addMesh(mesh: Mesh) {
     this.mesh = mesh;
+    this.mesh.setOwner(this);
   }
 
-  update() {
-    // console.log(this.name, 'update');
-    // this.position.z+=0.001;
+  update(time) {
+    this.mesh?.update(time);
+    if (this.afterUpdateFn) {
+      this.afterUpdateFn();
+    }
   }
 
   draw() {
-    if(!this.mesh) {
+    if (!this.mesh) {
       return;
     }
-    // console.log(this)
-
-    // draw vertices
     this.mesh.draw(this.position);
   }
 
   destroy() {}
 
-  move(value: Vec3) {
-    this.position = {
-      x: (this.position.x += value.x),
-      y: (this.position.y += value.y),
-      z: (this.position.z += value.z),
-    };
+  moveBy(x = 0, y = 0, z = 0) {
+    this.position.x += x;
+    this.position.y += y;
+    this.position.z += z;
+  }
+
+  /**
+   * Updated object scale with provided values
+   * @param sx
+   * @param sy
+   * @param sz
+   */
+  scaleBy(sx: number, sy = sx, sz = sx) {
+    const s = this.scale;
+    s.x = s.x + sx;
+    s.y = s.y + sy;
+    s.z = s.z + sz;
   }
 }

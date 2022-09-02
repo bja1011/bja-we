@@ -13,7 +13,7 @@ export class Game {
   constructor() {
     this.renderer = new Renderer();
     this.input = new Input();
-    this.update();
+    this.update(0);
   }
 
   addShader(
@@ -24,9 +24,9 @@ export class Game {
     this.renderer.addShader(name, vertexShaderSource, fragmentShaderSource);
   }
 
-  private update() {
+  private update(time: number) {
     this.input.update();
-    this.gameObjects.forEach((gameObject) => gameObject?.update());
+    this.gameObjects.forEach((gameObject) => gameObject?.update(time));
 
     this.renderer.draw(this.gameObjects);
 
@@ -35,7 +35,7 @@ export class Game {
     }
   }
 
-  addGameObject(name: string, gameObjectData: GameObjectData) {
+  addGameObject(name: string, gameObjectData: GameObjectData = {}) {
     const gameObject = new GameObject(this, {
       name,
       ...gameObjectData,

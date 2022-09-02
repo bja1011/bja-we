@@ -1,12 +1,13 @@
+import { matrixHelpers } from './helpers';
 import { Shader } from "./shader";
-import { GameObject } from './game-object';
+import { GameObject } from "./game-object";
 
 export class Renderer {
   canvas: HTMLCanvasElement;
   ctx: WebGL2RenderingContext;
 
   private shaders: Map<string, Shader> = new Map();
-
+  projection: number[];
 
   constructor() {
     this.init();
@@ -14,10 +15,23 @@ export class Renderer {
 
   init() {
     this.canvas = document.querySelector("#c");
-    GL = this.canvas.getContext("webgl2");
+    GL = this.ctx = this.canvas.getContext("webgl2");
+    GL.enable(GL.DEPTH_TEST);
     this.resize();
     addEventListener("resize", this.resize.bind(this));
     this.clearCanvas();
+
+    this.setProjection();
+  }
+
+  setProjection() {
+    const fieldOfViewInRadians = Math.PI * 0.5;
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const nearClippingPlaneDistance = 1;
+    const farClippingPlaneDistance = 50;
+    this.projection = matrixHelpers.perspectiveMatrix(fieldOfViewInRadians, 1, nearClippingPlaneDistance, farClippingPlaneDistance);
+    console.log(this.projection)
+    debugger;
   }
 
   addShader(
@@ -45,9 +59,9 @@ export class Renderer {
   draw(gameObjects: GameObject[]) {
     this.clearCanvas();
 
-    gameObjects.forEach(gameObject=>{
-      gameObject.draw()
-    })
+    gameObjects.forEach((gameObject) => {
+      gameObject.draw();
+    });
   }
 
   getShader(shaderName: string) {

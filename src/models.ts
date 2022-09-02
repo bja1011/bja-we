@@ -1,10 +1,12 @@
 import { Mesh } from "./mesh";
 import { Game } from './game';
+import { GameObject } from './game-object';
 
 export interface GameObjectData {
   name?: string;
-  position: Vec3;
+  position?: Vec3;
   mesh?: Mesh;
+  afterUpdateFn?: Function;
 }
 
 export interface MeshData {
@@ -13,6 +15,7 @@ export interface MeshData {
   colors?: number[];
   shaderName: string,
   game: Game;
+  gameObject?: GameObject
 }
 
 export enum ShaderType {
