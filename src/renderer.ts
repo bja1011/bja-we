@@ -1,4 +1,4 @@
-import { matrixHelpers } from './helpers';
+import { matrixHelpers, resizeCanvasToDisplaySize } from "./helpers";
 import { Shader } from "./shader";
 import { GameObject } from "./game-object";
 
@@ -20,18 +20,20 @@ export class Renderer {
     this.resize();
     addEventListener("resize", this.resize.bind(this));
     this.clearCanvas();
-
     this.setProjection();
   }
 
   setProjection() {
-    const fieldOfViewInRadians = Math.PI * 0.5;
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    const nearClippingPlaneDistance = 1;
-    const farClippingPlaneDistance = 50;
-    this.projection = matrixHelpers.perspectiveMatrix(fieldOfViewInRadians, 1, nearClippingPlaneDistance, farClippingPlaneDistance);
-    console.log(this.projection)
-    debugger;
+    const fieldOfViewInRadians = (Math.PI * 0.5) / 2;
+    const aspectRatio = this.ctx.canvas.width / this.ctx.canvas.height;
+    const nearClippingPlaneDistance = 0.01;
+    const farClippingPlaneDistance = 5000;
+    this.projection = matrixHelpers.perspectiveMatrix(
+      fieldOfViewInRadians,
+      aspectRatio,
+      nearClippingPlaneDistance,
+      farClippingPlaneDistance
+    );
   }
 
   addShader(
@@ -49,6 +51,14 @@ export class Renderer {
     GL.canvas.width = w;
     GL.canvas.height = h;
     GL.viewport(0, 0, w, h);
+    // turn on depth testing
+    console.log('resize')
+
+    resizeCanvasToDisplaySize(this.canvas, devicePixelRatio);
+    this.setProjection();
+
+    // tell webgl to cull faces
+    // GL.enable(GL.);
   }
 
   clearCanvas() {

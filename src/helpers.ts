@@ -6,6 +6,18 @@ export function genVertexColors(vertexCount: number, fillColor?: number) {
     );
 }
 
+export function resizeCanvasToDisplaySize(canvas, multiplier) {
+  multiplier = multiplier || 1;
+  const width = canvas.clientWidth * multiplier | 0;
+  const height = canvas.clientHeight * multiplier | 0;
+  if (canvas.width !== width || canvas.height !== height) {
+    canvas.width = width;
+    canvas.height = height;
+    return true;
+  }
+  return false;
+}
+
 function perspectiveMatrix(fieldOfViewInRadians, aspectRatio, near, far) {
   // Construct a perspective matrix
 
@@ -19,23 +31,12 @@ function perspectiveMatrix(fieldOfViewInRadians, aspectRatio, near, far) {
   const f = 1.0 / Math.tan(fieldOfViewInRadians / 2);
   const rangeInv = 1 / (near - far);
 
+  // prettier-ignore
   return [
-    f / aspectRatio,
-    0,
-    0,
-    0,
-    0,
-    f,
-    0,
-    0,
-    0,
-    0,
-    (near + far) * rangeInv,
-    -1,
-    0,
-    0,
-    near * far * rangeInv * 2,
-    0,
+    f / aspectRatio, 0, 0, 0,
+    0, f, 0, 0,
+    0, 0, (near + far) * rangeInv, -1,
+    0, 0, near * far * rangeInv * 2, 0,
   ];
 }
 

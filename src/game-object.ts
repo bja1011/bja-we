@@ -13,7 +13,8 @@ export class GameObject {
     y: 0,
     z: 0,
   };
-  origin: Vec3 = { x: -0.5, y: -0.5, z: 0.5 };
+  origin: Vec3 = { x: 0, y: 0, z: 0 };
+  // origin: Vec3 = { x: -0.5, y: -0.5, z: -0.5 };
   scale: Vec3 = { x: 1, y: 1, z: 1 };
 
   constructor(game: Game, gameObjectData: GameObjectData) {
@@ -26,6 +27,22 @@ export class GameObject {
     if (gameObjectData.afterUpdateFn) {
       this.afterUpdateFn = gameObjectData.afterUpdateFn.bind(this);
     }
+
+    /* devblock:start */
+    let folder = gui.addFolder(this.name);
+    folder.open();
+    folder.add(this.position, "x", -3, 3, 0.001).name('Pos x');
+    folder.add(this.position, "y", -3, 3, 0.001).name('Pos y');
+    folder.add(this.position, "z", -9, 3, 0.001).name('Pos z');
+
+    folder.add(this.scale, "x", 0, 3, 0.001).name('Scale x');
+    folder.add(this.scale, "y", 0, 3, 0.001).name('Scale y');
+    folder.add(this.scale, "z", 0, 3, 0.001).name('Scale z');
+
+    folder.add(this.origin, "x", 0, 3, 0.001).name('Origin x');
+    folder.add(this.origin, "y", 0, 3, 0.001).name('Origin y');
+    folder.add(this.origin, "z", 0, 3, 0.001).name('Origin z');
+    /* devblock:end */
   }
 
   addMesh(mesh: Mesh) {
