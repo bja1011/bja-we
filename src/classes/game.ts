@@ -85,13 +85,17 @@ export class Game {
    * @param name
    * @param gameObjectData
    */
-  addGameObject(name: string, gameObjectData: GameObjectData = {}) {
+  createGameObject(name: string, gameObjectData: GameObjectData = {}) {
     const gameObject = new GameObject(this, {
       name,
       ...gameObjectData,
     });
     this.gameObjects.push(gameObject);
     return gameObject;
+  }
+
+  addGameObject(object: GameObject) {
+    this.gameObjects.push(object);
   }
 
   /**

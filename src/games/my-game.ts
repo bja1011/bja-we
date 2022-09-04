@@ -3,6 +3,7 @@ import { GameObject } from "../classes/game-object";
 import { Pyramid, Quad } from "../classes/mesh";
 import { degToRad, generateVec3, genVertexColors } from "../helpers";
 import { basicFragmentShaderString, basicVertexShaderString } from "../shaders";
+import { Player } from "./player";
 
 export class MyGame extends Game {
   player: GameObject;
@@ -22,7 +23,8 @@ export class MyGame extends Game {
       },
     });
 
-    this.player = this.addGameObject("player", {
+    this.player = new Player(this, {
+      name: "player",
       position: {
         x: 0,
         y: -1,
@@ -31,7 +33,9 @@ export class MyGame extends Game {
       mesh: new Pyramid(this, "basicShader"),
     });
 
-    const ground = this.addGameObject("ground", {
+    this.addGameObject(this.player);
+
+    const ground = this.createGameObject("ground", {
       position: {
         x: -50,
         y: -1,
@@ -44,7 +48,7 @@ export class MyGame extends Game {
 
     let objects = [];
     for (let i = 0; i < 100; i++) {
-      let o = this.addGameObject(`o${i}`, {
+      let o = this.createGameObject(`o${i}`, {
         mesh: new (i % 2 === 0 ? Pyramid : Pyramid)(this, "basicShader"),
         position: {
           x: -2,
@@ -79,57 +83,5 @@ export class MyGame extends Game {
     }
   }
 
-  handleInput() {
-    const moveValue = 0.1;
-    this.setInput([
-      {
-        key: "ArrowRight",
-        action: () => {
-          this.player.moveBy(moveValue);
-        },
-      },
-      {
-        key: "ArrowLeft",
-        action: () => {
-          this.player.moveBy(-moveValue);
-        },
-      },
-      {
-        key: "ArrowUp",
-        action: () => {
-          this.player.moveBy(0, 0, -moveValue);
-        },
-      },
-      {
-        key: "ArrowDown",
-        action: () => {
-          this.player.moveBy(0, 0, moveValue);
-        },
-      },
-      {
-        key: "a",
-        action: () => {
-          this.player.moveBy(0, moveValue, 0);
-        },
-      },
-      {
-        key: "z",
-        action: () => {
-          this.player.moveBy(0, -moveValue, 0);
-        },
-      },
-      {
-        key: "q",
-        action: () => {
-          this.player.rotateBy(0, 0.05, 0);
-        },
-      },
-      {
-        key: "w",
-        action: () => {
-          this.player.moveBy(0, 0, moveValue);
-        },
-      },
-    ]);
-  }
+
 }

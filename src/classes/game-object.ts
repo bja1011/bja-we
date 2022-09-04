@@ -1,13 +1,14 @@
 import { vec3Samples } from "../consts";
-import { GameObjectData, Vec2, Vec3 } from "../models";
+import { GameObjectData, Object3d, Vec2, Vec3 } from "../models";
 import { Game } from "./game";
 import { Mesh } from "./mesh";
 
+// @todo: extend from generic ovcect? (along with the camera)
 export class GameObject {
   mesh: Mesh;
   // meshes: Mesh[]; @todo: future
   name: string;
-  private game: Game;
+  protected game: Game;
   afterUpdateFn: Function;
   position: Vec3;
   origin: Vec3;
@@ -28,23 +29,10 @@ export class GameObject {
     if (gameObjectData.afterUpdateFn) {
       this.afterUpdateFn = gameObjectData.afterUpdateFn.bind(this);
     }
-
-    /* devblock:start */
-    // let folder = gui.addFolder(this.name);
-    // folder.open();
-    // folder.add(this.position, "x", -3, 3, 0.001).name('Pos x');
-    // folder.add(this.position, "y", -3, 3, 0.001).name('Pos y');
-    // folder.add(this.position, "z", -9, 3, 0.001).name('Pos z');
-    //
-    // folder.add(this.scale, "x", 0, 3, 0.001).name('Scale x');
-    // folder.add(this.scale, "y", 0, 3, 0.001).name('Scale y');
-    // folder.add(this.scale, "z", 0, 3, 0.001).name('Scale z');
-    //
-    // folder.add(this.origin, "x", 0, 3, 0.001).name('Origin x');
-    // folder.add(this.origin, "y", 0, 3, 0.001).name('Origin y');
-    // folder.add(this.origin, "z", 0, 3, 0.001).name('Origin z');
-    /* devblock:end */
+    this.init();
   }
+
+  init() {}
 
   addMesh(mesh: Mesh) {
     this.mesh = mesh;
@@ -52,6 +40,7 @@ export class GameObject {
   }
 
   update(time) {
+    this.beforeUpdate();
     this.mesh?.update(time);
     if (this.afterUpdateFn) {
       this.afterUpdateFn(time);
@@ -92,4 +81,6 @@ export class GameObject {
     s.y = s.y + y;
     s.z = s.z + z;
   }
+
+  beforeUpdate() {}
 }
