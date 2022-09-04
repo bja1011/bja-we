@@ -1,3 +1,4 @@
+import { vec3Samples } from "./consts";
 import { Shader } from "./shader";
 import { MeshData, Vec2, Vec3 } from "./models";
 import { Game } from "./game";
@@ -15,7 +16,7 @@ export class Mesh {
   colorBuffer: WebGLBuffer;
   shader: Shader;
   private game: Game;
-  position: Vec3 = { x: 0, y: 0, z: 0 };
+  position: Vec3 = vec3Samples.zeros;
   private transforms: any;
   private modelTransforms: any;
   gameObject: GameObject;
@@ -85,7 +86,7 @@ export class Mesh {
 
     // colors
     GL.bindBuffer(GL.ARRAY_BUFFER, this.colorBuffer);
-    GL.vertexAttribPointer(1, 3, GL.FLOAT, false, 0, 0);
+    GL.vertexAttribPointer(1, 4, GL.FLOAT, false, 0, 0);
     GL.enableVertexAttribArray(1);
   }
 
@@ -95,9 +96,14 @@ export class Mesh {
     const scale = matrixHelpers.scaleMatrix(sx, sy, sz);
 
     // Rotate according to time
-    const rotateX = matrixHelpers.rotateXMatrix(now * -0.0005);
-    const rotateY = matrixHelpers.rotateYMatrix(now * 0.0005);
-    const rotateZ = matrixHelpers.rotateZMatrix(now * 0.0005);
+    // const rotateX = matrixHelpers.rotateXMatrix(now * -0.0005);
+    // const rotateY = matrixHelpers.rotateYMatrix(now * 0.0005);
+    // const rotateZ = matrixHelpers.rotateZMatrix(now * 0.0005);
+
+    const { x: rx, y: ry, z: rz } = this.gameObject.rotation;
+    const rotateX = matrixHelpers.rotateXMatrix(rx);
+    const rotateY = matrixHelpers.rotateYMatrix(ry);
+    const rotateZ = matrixHelpers.rotateZMatrix(rz);
 
     const { x: tx, y: ty, z: tz } = this.gameObject.position;
     const translate = matrixHelpers.translateMatrix(tx, ty, tz);
@@ -169,6 +175,30 @@ export class Quad extends Mesh {
   }
 }
 
+export class Pyramid extends Mesh {
+  constructor(game: Game, shaderName: string, colors?: number[]) {
+    super({
+      game,
+      shaderName,
+      // prettier-ignore
+      vertices: [
+        0, 0, -1,
+        0.85, -0, 0.5,
+        -0.85, -0, 0.5,
+        0, 2, 0
+      ],
+      // prettier-ignore
+      indices: [
+        0, 3, 1,
+        0, 1, 2,
+        1, 3, 2,
+        2, 3, 0
+      ],
+      colors: colors ?? genVertexColors(4),
+    });
+  }
+}
+
 export class Cube extends Mesh {
   constructor(game: Game, shaderName: string, colors?: number[]) {
     super({
@@ -213,12 +243,42 @@ export class Cube extends Mesh {
         -1.0,  1.0, -1.0,
       ],
       indices: [
-        0,  1,  2,      0,  2,  3,    // front
-        4,  5,  6,      4,  6,  7,    // back
-        8,  9,  10,     8,  10, 11,   // top
-        12, 13, 14,     12, 14, 15,   // bottom
-        16, 17, 18,     16, 18, 19,   // right
-        20, 21, 22,     20, 22, 23,   // left
+        0,
+        1,
+        2,
+        0,
+        2,
+        3, // front
+        4,
+        5,
+        6,
+        4,
+        6,
+        7, // back
+        8,
+        9,
+        10,
+        8,
+        10,
+        11, // top
+        12,
+        13,
+        14,
+        12,
+        14,
+        15, // bottom
+        16,
+        17,
+        18,
+        16,
+        18,
+        19, // right
+        20,
+        21,
+        22,
+        20,
+        22,
+        23, // left
       ],
       // prettier-ignore
       colors: colors ?? genVertexColors(36),

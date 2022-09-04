@@ -2,12 +2,15 @@ window.GL = undefined;
 
 /* devblock:start */
 import * as dat from "dat.gui";
+
 window.gui = new dat.GUI();
 /* devblock:end */
 
 import { Game } from "./game";
+import { GameObject } from "./game-object";
+import { degToRad, generateVec3, genVertexColors } from './helpers';
 import { basicFragmentShaderString, basicVertexShaderString } from "./shaders";
-import { Cube, Quad, Triangle } from "./mesh";
+import { Cube, Pyramid, Quad, Triangle } from "./mesh";
 
 const game = new Game();
 
@@ -17,87 +20,107 @@ game.addShader(
   basicFragmentShaderString
 );
 
-const go = game.addGameObject("go1", {
+const player = game.addGameObject("player", {
   position: {
     x: 0,
-    y: 0,
-    z: -3,
+    y: -1,
+    z: -7,
   },
-  mesh: new Cube(game, "basicShader"),
+  mesh: new Pyramid(game, "basicShader"),
 });
 
-// const go2 = game.addGameObject("go2", {
-//   position: {
-//     x: 0.5,
-//     y: 0,
-//     z: 0,
-//   },
-// });
-// const mesh2 = new Triangle(game, "basicShader");
-// go2.addMesh(mesh2);
-//
-let objects = []
+const ground = game.addGameObject("ground", {
+  position: {
+    x: -50,
+    y: -1,
+    z: 2,
+  },
+  mesh: new Quad(game, "basicShader", genVertexColors(4, 0.2)),
+  rotation: generateVec3(degToRad(90)),
+  scale: { x: 100, y: 100, z: 1000 },
+});
+console.log(ground)
+
+let objects = [];
 for (let i = 0; i < 100; i++) {
   let o = game.addGameObject(`o${i}`, {
-    mesh: new (i % 2 === 0 ? Cube : Cube)(game, "basicShader"),
+    mesh: new (i % 2 === 0 ? Pyramid : Pyramid)(game, "basicShader"),
     position: {
       x: -2,
       y: -1,
       z: -i * 2,
     },
+    afterUpdateFn: function (time: number) {
+      (this as GameObject).position = {
+        x: Math.sin(time / 500 + i / 5),
+        y: this.position.y,
+        z: this.position.z,
+      };
+      // (this as GameObject).scale = {
+      //   x: Math.abs(Math.sin(time / 100 + i)),
+      //   y: Math.abs(Math.sin(time / 100 + i)),
+      //   z: Math.abs(Math.sin(time / 100 + i)),
+      // };
+      // (this as GameObject).scale = {
+      //   x: Math.sin(time / 500 + i / 5),
+      //   y: Math.sin(time / 500 + i / 5),
+      //   z: Math.sin(time / 500 + i / 5),
+      // };
+    },
   });
   o.scale = { x: 0.4, y: 0.4, z: 0.4 };
-  objects.push(o)
+  objects.push(o);
 }
+
+const moveValue = 0.1;
 
 game.setInput([
   {
     key: "ArrowRight",
     action: () => {
-      go.moveBy(0.1);
-      objects.forEach(o=>o.moveBy(0.1))
+      player.moveBy(moveValue);
     },
   },
   {
     key: "ArrowLeft",
     action: () => {
-      go.moveBy(-0.1);
+      player.moveBy(-moveValue);
     },
   },
   {
     key: "ArrowUp",
     action: () => {
-      go.moveBy(0, 0.1);
+      player.moveBy(0, 0, -moveValue);
     },
   },
   {
     key: "ArrowDown",
     action: () => {
-      go.moveBy(0, -0.1);
+      player.moveBy(0, 0, moveValue);
     },
   },
   {
     key: "a",
     action: () => {
-      go.scaleBy(0.05);
+      player.moveBy(0, moveValue, 0);
     },
   },
   {
     key: "z",
     action: () => {
-      go.scaleBy(-0.05);
+      player.moveBy(0, -moveValue, 0);
     },
   },
   {
     key: "q",
     action: () => {
-      go.moveBy(0, 0, -0.05);
+      player.rotateBy(0, 0.05, 0);
     },
   },
   {
     key: "w",
     action: () => {
-      go.moveBy(0, 0, 0.05);
+      player.moveBy(0, 0, moveValue);
     },
   },
 ]);

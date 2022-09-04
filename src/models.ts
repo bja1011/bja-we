@@ -1,21 +1,24 @@
 import { Mesh } from "./mesh";
-import { Game } from './game';
-import { GameObject } from './game-object';
+import { Game } from "./game";
+import { GameObject } from "./game-object";
 
 export interface GameObjectData {
+  origin?: Vec3;
   name?: string;
   position?: Vec3;
   mesh?: Mesh;
-  afterUpdateFn?: Function;
+  afterUpdateFn?: (time: number) => void;
+  scale?: Vec3;
+  rotation?: Vec3;
 }
 
 export interface MeshData {
   vertices: number[];
   indices: number[];
   colors?: number[];
-  shaderName: string,
+  shaderName: string;
   game: Game;
-  gameObject?: GameObject
+  gameObject?: GameObject;
 }
 
 export enum ShaderType {

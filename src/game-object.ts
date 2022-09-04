@@ -1,3 +1,4 @@
+import { vec3Samples } from './consts';
 import { GameObjectData, Vec2, Vec3 } from "./models";
 import { Game } from "./game";
 import { Mesh } from "./mesh";
@@ -8,19 +9,19 @@ export class GameObject {
   name: string;
   private game: Game;
   afterUpdateFn: Function;
-  position: Vec3 = {
-    x: 0,
-    y: 0,
-    z: 0,
-  };
-  origin: Vec3 = { x: 0, y: 0, z: 0 };
+  position: Vec3;
+  origin: Vec3;
   // origin: Vec3 = { x: -0.5, y: -0.5, z: -0.5 };
-  scale: Vec3 = { x: 1, y: 1, z: 1 };
+  scale: Vec3;
+  rotation?: Vec3;
 
   constructor(game: Game, gameObjectData: GameObjectData) {
     this.name = gameObjectData.name;
     this.game = game;
-    this.position = gameObjectData.position ?? this.position;
+    this.position = gameObjectData.position ?? vec3Samples.zeros;
+    this.scale = gameObjectData.scale ?? vec3Samples.ones;
+    this.origin = gameObjectData.origin ?? vec3Samples.zeros;
+    this.rotation = gameObjectData.rotation ?? vec3Samples.zeros;
     if (gameObjectData.mesh) {
       this.addMesh(gameObjectData.mesh);
     }
@@ -29,19 +30,19 @@ export class GameObject {
     }
 
     /* devblock:start */
-    let folder = gui.addFolder(this.name);
-    folder.open();
-    folder.add(this.position, "x", -3, 3, 0.001).name('Pos x');
-    folder.add(this.position, "y", -3, 3, 0.001).name('Pos y');
-    folder.add(this.position, "z", -9, 3, 0.001).name('Pos z');
-
-    folder.add(this.scale, "x", 0, 3, 0.001).name('Scale x');
-    folder.add(this.scale, "y", 0, 3, 0.001).name('Scale y');
-    folder.add(this.scale, "z", 0, 3, 0.001).name('Scale z');
-
-    folder.add(this.origin, "x", 0, 3, 0.001).name('Origin x');
-    folder.add(this.origin, "y", 0, 3, 0.001).name('Origin y');
-    folder.add(this.origin, "z", 0, 3, 0.001).name('Origin z');
+    // let folder = gui.addFolder(this.name);
+    // folder.open();
+    // folder.add(this.position, "x", -3, 3, 0.001).name('Pos x');
+    // folder.add(this.position, "y", -3, 3, 0.001).name('Pos y');
+    // folder.add(this.position, "z", -9, 3, 0.001).name('Pos z');
+    //
+    // folder.add(this.scale, "x", 0, 3, 0.001).name('Scale x');
+    // folder.add(this.scale, "y", 0, 3, 0.001).name('Scale y');
+    // folder.add(this.scale, "z", 0, 3, 0.001).name('Scale z');
+    //
+    // folder.add(this.origin, "x", 0, 3, 0.001).name('Origin x');
+    // folder.add(this.origin, "y", 0, 3, 0.001).name('Origin y');
+    // folder.add(this.origin, "z", 0, 3, 0.001).name('Origin z');
     /* devblock:end */
   }
 
@@ -53,7 +54,7 @@ export class GameObject {
   update(time) {
     this.mesh?.update(time);
     if (this.afterUpdateFn) {
-      this.afterUpdateFn();
+      this.afterUpdateFn(time);
     }
   }
 
@@ -83,5 +84,12 @@ export class GameObject {
     s.x = s.x + sx;
     s.y = s.y + sy;
     s.z = s.z + sz;
+  }
+
+  rotateBy(x: number,y: number,z: number) {
+    const s = this.rotation;
+    s.x = s.x + x;
+    s.y = s.y + y;
+    s.z = s.z + z;
   }
 }

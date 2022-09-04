@@ -1,6 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ZipPlugin = require("zip-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.ts",
@@ -12,7 +13,7 @@ module.exports = {
   mode: "production",
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'src/index.html'
+      template: "src/index.html",
     }),
     new ZipPlugin({
       pathPrefix: "dist",
@@ -22,28 +23,28 @@ module.exports = {
   devtool: "source-map",
   devServer: {
     static: {
-      directory: path.join(__dirname, 'public'),
+      directory: path.join(__dirname, "public"),
     },
     compress: true,
     port: 9000,
     liveReload: true,
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: [".tsx", ".ts", ".js"],
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
         use: "ts-loader",
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.ts$/,
         exclude: /(node_modules|bower_components|\.spec\.js)/,
         use: [
           {
-            loader: 'webpack-remove-code-blocks',
+            loader: "webpack-remove-code-blocks",
           },
         ],
       },
@@ -51,5 +52,15 @@ module.exports = {
   },
   optimization: {
     minimize: true,
+    minimizer: [new TerserPlugin({
+      terserOptions: {
+        mangle: {
+          properties: true,
+          keep_classnames: false,
+          keep_fnames: false,
+          module: true,
+        },
+      }
+    })],
   },
 };

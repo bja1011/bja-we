@@ -27,7 +27,7 @@ export class Renderer {
     const fieldOfViewInRadians = (Math.PI * 0.5) / 2;
     const aspectRatio = this.ctx.canvas.width / this.ctx.canvas.height;
     const nearClippingPlaneDistance = 0.01;
-    const farClippingPlaneDistance = 5000;
+    const farClippingPlaneDistance = 500;
     this.projection = matrixHelpers.perspectiveMatrix(
       fieldOfViewInRadians,
       aspectRatio,
@@ -54,7 +54,10 @@ export class Renderer {
     // turn on depth testing
     console.log('resize')
 
-    resizeCanvasToDisplaySize(this.canvas, devicePixelRatio);
+    GL.enable(GL.BLEND)
+    GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
+
+    resizeCanvasToDisplaySize(this.canvas, 1);
     this.setProjection();
 
     // tell webgl to cull faces
