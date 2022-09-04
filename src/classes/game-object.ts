@@ -1,5 +1,5 @@
-import { vec3Samples } from './consts';
-import { GameObjectData, Vec2, Vec3 } from "./models";
+import { vec3Samples } from "../consts";
+import { GameObjectData, Vec2, Vec3 } from "../models";
 import { Game } from "./game";
 import { Mesh } from "./mesh";
 
@@ -86,7 +86,7 @@ export class GameObject {
     s.z = s.z + sz;
   }
 
-  rotateBy(x: number,y: number,z: number) {
+  rotateBy(x: number, y: number, z: number) {
     const s = this.rotation;
     s.x = s.x + x;
     s.y = s.y + y;

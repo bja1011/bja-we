@@ -1,6 +1,6 @@
-import { Mesh } from "./mesh";
-import { Game } from "./game";
-import { GameObject } from "./game-object";
+import { Mesh } from "./classes/mesh";
+import { Game } from "./classes/game";
+import { GameObject } from "./classes/game-object";
 
 export interface Object3d {
   position?: Vec3;

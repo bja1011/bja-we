@@ -1,7 +1,7 @@
-import { vec3Samples } from "./consts";
+import { vec3Samples } from "../consts";
 import { Game } from "./game";
-import { degToRad, m4, matrixHelpers } from "./helpers";
-import { CameraOptions, Vec3 } from "./models";
+import { degToRad, m4, matrixHelpers } from "../helpers";
+import { CameraOptions, Vec3 } from "../models";
 import { Renderer } from "./renderer";
 
 const defaultFov = (Math.PI * 0.5) / 2;

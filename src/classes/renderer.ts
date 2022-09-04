@@ -1,7 +1,7 @@
 import { Camera } from "./camera";
 import { Game } from "./game";
-import { matrixHelpers, resizeCanvasToDisplaySize } from "./helpers";
-import { CameraOptions } from './models';
+import { matrixHelpers, resizeCanvasToDisplaySize } from "../helpers";
+import { CameraOptions } from '../models';
 import { Shader } from "./shader";
 import { GameObject } from "./game-object";
 

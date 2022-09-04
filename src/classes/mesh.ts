@@ -1,10 +1,9 @@
-import { vec3Samples } from "./consts";
-import { Shader } from "./shader";
-import { MeshData, Vec2, Vec3 } from "./models";
+import { vec3Samples } from "../consts";
+import { genVertexColors, m4, matrixHelpers } from "../helpers";
+import { MeshData, Vec3 } from "../models";
 import { Game } from "./game";
-import { degToRad, genVertexColors, m4 } from "./helpers";
 import { GameObject } from "./game-object";
-import { matrixHelpers } from "./helpers";
+import { Shader } from "./shader";
 
 export class Mesh {
   vertices: Float32Array;
@@ -90,7 +89,7 @@ export class Mesh {
     GL.enableVertexAttribArray(1);
   }
 
-  update(now) {
+  update(time) {
     this.game.renderer.setProjection();
     //Scale up
     const { x: sx, y: sy, z: sz } = this.gameObject.scale;
