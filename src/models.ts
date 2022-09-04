@@ -2,6 +2,16 @@ import { Mesh } from "./mesh";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
 
+export interface Object3d {
+  position?: Vec3;
+  scale?: Vec3;
+  rotation?: Vec3;
+}
+
+export interface CameraOptions extends Object3d {
+  fov?: number;
+}
+
 export interface GameObjectData {
   origin?: Vec3;
   name?: string;

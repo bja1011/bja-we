@@ -2,7 +2,7 @@ import { vec3Samples } from "./consts";
 import { Shader } from "./shader";
 import { MeshData, Vec2, Vec3 } from "./models";
 import { Game } from "./game";
-import { genVertexColors } from "./helpers";
+import { degToRad, genVertexColors, m4 } from "./helpers";
 import { GameObject } from "./game-object";
 import { matrixHelpers } from "./helpers";
 
@@ -91,9 +91,10 @@ export class Mesh {
   }
 
   update(now) {
+    this.game.renderer.setProjection();
     //Scale up
     const { x: sx, y: sy, z: sz } = this.gameObject.scale;
-    const scale = matrixHelpers.scaleMatrix(sx, sy, sz);
+    const scale = m4.scaling(sx, sy, sz);
 
     // Rotate according to time
     // const rotateX = matrixHelpers.rotateXMatrix(now * -0.0005);
@@ -118,6 +119,7 @@ export class Mesh {
     // Multiply together, make sure and read them in opposite order
     this.modelTransforms = matrixHelpers.multiplyArrayOfMatrices([
       this.game.renderer.projection,
+      this.game.renderer.camera.cameraMatrix,
       translate,
       position, // step 4
       rotateZ, // step 3

@@ -1,15 +1,21 @@
+import { Camera } from "./camera";
+import { Game } from "./game";
 import { matrixHelpers, resizeCanvasToDisplaySize } from "./helpers";
+import { CameraOptions } from './models';
 import { Shader } from "./shader";
 import { GameObject } from "./game-object";
 
 export class Renderer {
   canvas: HTMLCanvasElement;
   ctx: WebGL2RenderingContext;
+  camera: Camera;
 
   private shaders: Map<string, Shader> = new Map();
   projection: number[];
+  private game: Game;
 
-  constructor() {
+  constructor(game: Game) {
+    this.game = game;
     this.init();
   }
 
@@ -17,23 +23,34 @@ export class Renderer {
     this.canvas = document.querySelector("#c");
     GL = this.ctx = this.canvas.getContext("webgl2");
     GL.enable(GL.DEPTH_TEST);
+
+    this.camera = new Camera(this.game, {
+      rotation: {
+        x: 5,
+        y: 0,
+        z: 0,
+      },
+    });
+
     this.resize();
     addEventListener("resize", this.resize.bind(this));
     this.clearCanvas();
+
     this.setProjection();
   }
 
   setProjection() {
-    const fieldOfViewInRadians = (Math.PI * 0.5) / 2;
+    const fieldOfViewInRadians = this.camera.fov;
     const aspectRatio = this.ctx.canvas.width / this.ctx.canvas.height;
     const nearClippingPlaneDistance = 0.01;
-    const farClippingPlaneDistance = 500;
+    const farClippingPlaneDistance = 5000;
     this.projection = matrixHelpers.perspectiveMatrix(
       fieldOfViewInRadians,
       aspectRatio,
       nearClippingPlaneDistance,
       farClippingPlaneDistance
     );
+    this.camera.update();
   }
 
   addShader(
@@ -52,9 +69,9 @@ export class Renderer {
     GL.canvas.height = h;
     GL.viewport(0, 0, w, h);
     // turn on depth testing
-    console.log('resize')
+    console.log("resize");
 
-    GL.enable(GL.BLEND)
+    GL.enable(GL.BLEND);
     GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
 
     resizeCanvasToDisplaySize(this.canvas, 1);

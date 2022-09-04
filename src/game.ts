@@ -1,7 +1,7 @@
 import { Renderer } from "./renderer";
 import { GameObject } from "./game-object";
 import { Input } from "./input";
-import { GameObjectData } from "./models";
+import { CameraOptions, GameObjectData } from './models';
 
 export class Game {
   renderer: Renderer;
@@ -11,7 +11,7 @@ export class Game {
   private stopUpdate = false;
 
   constructor() {
-    this.renderer = new Renderer();
+    this.renderer = new Renderer(this);
     this.input = new Input();
     this.update(0);
   }
@@ -55,5 +55,9 @@ export class Game {
     inputConfig.forEach((config) =>
       this.input.registerAction(config.key, config.action)
     );
+  }
+
+  updateCamera(options: CameraOptions) {
+    this.renderer.camera.setOptions(options);
   }
 }
