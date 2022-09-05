@@ -40,7 +40,7 @@ export class GameObject {
   }
 
   update(time) {
-    this.beforeUpdate();
+    this.beforeUpdate(time);
     this.mesh?.update(time);
     if (this.afterUpdateFn) {
       this.afterUpdateFn(time);
@@ -82,5 +82,5 @@ export class GameObject {
     s.z = s.z + z;
   }
 
-  beforeUpdate() {}
+  beforeUpdate(time: number) {}
 }

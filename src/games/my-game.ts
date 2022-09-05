@@ -6,7 +6,7 @@ import { basicFragmentShaderString, basicVertexShaderString } from "../shaders";
 import { Player } from "./player";
 
 export class MyGame extends Game {
-  player: GameObject;
+  player: Player;
 
   beforeRun() {
     this.addShader(
@@ -18,20 +18,12 @@ export class MyGame extends Game {
     this.updateCamera({
       position: {
         x: 0,
-        y: -5,
+        y: 0,
         z: 0,
       },
     });
 
-    this.player = new Player(this, {
-      name: "player",
-      position: {
-        x: 0,
-        y: -1,
-        z: -7,
-      },
-      mesh: new Pyramid(this, "basicShader"),
-    });
+    this.player = new Player(this);
 
     this.addGameObject(this.player);
 
@@ -39,9 +31,9 @@ export class MyGame extends Game {
       position: {
         x: -50,
         y: -1,
-        z: -20,
+        z: -0,
       },
-      mesh: new Quad(this, "basicShader", genVertexColors(4, 0.2, 0.4)),
+      mesh: new Quad(this, "basicShader", genVertexColors(4, 0.9)),
       rotation: generateVec3(degToRad(90)),
       scale: { x: 1000, y: 100, z: 1 },
     });

@@ -26,7 +26,7 @@ export class Renderer {
 
     this.camera = new Camera(this.game, {
       rotation: {
-        x: 5,
+        x: 0,
         y: 0,
         z: 0,
       },

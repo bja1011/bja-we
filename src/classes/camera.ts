@@ -1,4 +1,5 @@
 import { vec3Samples } from "../consts";
+import { MyGame } from '../games/my-game';
 import { Game } from "./game";
 import { degToRad, m4, matrixHelpers } from "../helpers";
 import { CameraOptions, Vec3 } from "../models";
@@ -12,6 +13,7 @@ export class Camera {
   rotation: Vec3;
   fov: number;
   position: Vec3;
+  target = vec3Samples.zeros;
   cameraMatrix: number[];
 
   constructor(game: Game, cameraOptions?: CameraOptions) {
@@ -24,9 +26,9 @@ export class Camera {
 
     /* devblock:start */
     let folder = gui.addFolder("Camera");
-    folder.add(this.rotation, "x", -60, 60, 0.001).name("Rot x");
-    folder.add(this.rotation, "y", -60, 30, 0.001).name("Rot y");
-    folder.add(this.rotation, "z", -60, 30, 0.001).name("Rot z");
+    folder.add(this.rotation, "x", -180, 180, 0.001).name("Rot x");
+    folder.add(this.rotation, "y", -180, 180, 0.001).name("Rot y");
+    folder.add(this.rotation, "z", -180, 180, 0.001).name("Rot z");
     folder.add(this.position, "x", -130, 130, 1).name("Pos x");
     folder.add(this.position, "y", -130, 130, 1).name("Pos y");
     folder.add(this.position, "z", -130, 130, 1).name("Pos z");
@@ -44,7 +46,10 @@ export class Camera {
       cameraMatrixRZ,
     ]);
     const { x, y, z } = this.position;
+    const { x: tx, y: ty, z: tz } = this.target;
     this.cameraMatrix = m4.translate(cameraMatrix, x, y, z);
+    this.cameraMatrix = m4.lookAt([x, y, z], [tx, ty, tz], [0, 1, 0]);
+    this.cameraMatrix = m4.inverse(this.cameraMatrix);
   }
 
   setPosition(x = 0, y = 0, z = 0) {
